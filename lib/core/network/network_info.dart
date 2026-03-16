@@ -1,31 +1,14 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 
-class NetworkCaller {
+abstract class NetworkInfo {
+  Future<bool> get isConnected;
+}
 
-  static Future<dynamic> getRequest(String url) async {
+class NetworkInfoImpl implements NetworkInfo {
+  final InternetConnectionChecker connectionChecker;
 
-    final response = await http.get(Uri.parse(url));
+  NetworkInfoImpl(this.connectionChecker);
 
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    }
-
-    return null;
-  }
-
-  static Future<dynamic> postRequest(
-      String url, Map body, String token) async {
-
-    final response = await http.post(
-      Uri.parse(url),
-      headers: {
-        "Content-Type": "application/json",
-        "token": token
-      },
-      body: jsonEncode(body),
-    );
-
-    return jsonDecode(response.body);
-  }
+  @override
+  Future<bool> get isConnected => connectionChecker.hasConnection;
 }
